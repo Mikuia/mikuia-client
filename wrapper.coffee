@@ -2,29 +2,27 @@ zmq = require 'zmq'
 _ = require 'underscore'
 
 module.exports = class Wrapper
-	callbacks = {}
-	req = null
-
 	constructor: (address) ->
+		@callbacks = {}
+		
 		@req = zmq.socket 'req'
 		@req.connect address
 		@req.on 'message', (data) =>
 			jsonData = null
-
 			try
 				jsonData = JSON.parse data
 			catch e
 				console.log 'Error: ' + e
+				return
 
-			if jsonData?
-				if jsonData.id? and callbacks[jsonData.id]
-					defaultObject =
-						type: 'error'
-						error: true
-						message: null
+			if jsonData.id? and callbacks[jsonData.id]
+				defaultObject =
+					type: 'error'
+					error: true
+					message: null
 
-					jsonData = _.extend defaultObject, jsonData
-					callbacks[jsonData.id].apply this, [jsonData.error, jsonData.message]
+				jsonData = _.extend defaultObject, jsonData
+				callbacks[jsonData.id].apply this, [jsonData.error, jsonData.message]
 
 	send: (message, callback) =>
 		object = message
