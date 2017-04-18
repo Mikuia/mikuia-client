@@ -8,10 +8,12 @@
 		"url": "https://github.com/Mikuia/mikuia-client.git"
 	},
 	"dependencies": {
+		"cli-color": "^1.2.0",
 		"ts-node": "^3.0.2",
 		"zmq": "^2.15.3"
 	},
 	"devDependencies": {
+		"@types/cli-color": "^0.3.29",
 		"@types/node": "^7.0.5",
 		"@types/zmq": "^0.0.20",
 		"typescript": "^2.2.1"

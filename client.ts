@@ -3,17 +3,22 @@ import * as events from 'events';
 import {Wrapper} from './wrapper';
 
 export class MikuiaClient extends events.EventEmitter {
+    private name: string;
+    private token: string;
     private wr: Wrapper;
 
-    constructor(address: string) {
+    constructor(address: string, ports: number[]) {
         super();
-        this.wr = new Wrapper(address, this);
+        this.name = 'plugin_' + Math.random().toString(36).slice(-10);
+        this.token = '';
+        this.wr = new Wrapper(address, ports, this);
     }
 
     _sendRequest(method: string, args: Object | null) {
         return this.wr.send({
             method: method,
-            args: args
+            args: args,
+            token: this.token
         });
     }
 
@@ -21,9 +26,52 @@ export class MikuiaClient extends events.EventEmitter {
         this.wr.connect();
     }
 
+    disconnect() {
+        this.wr.disconnect();
+    }
+
+    reconnect(delay: number) {
+        this.wr.reconnect(delay);
+    }
+
     identify(name: string) {
-        this._sendRequest('identify', name).then(() => {
-            this.emit('identify');
+        // this.name = name;
+        this._sendRequest('identify', { name: name }).then((token: string) => {
+            console.log('identified');
+            this.name = name;
+            this.token = token;
+
+            this.emit('identified');
+        }).catch((err) => {
+            console.log('failed');
+            this.reconnect(1000);
+        })
+    }
+
+    subscribe(topic: string) {
+        this.wr.subscribe(topic);
+    }
+
+    registerHandler(name: string, info: object) {
+        this._sendRequest('registerHandler', {
+            name: name,
+            info: info
+        }).then(() => {
+            console.log('registered handler: ' + name);
+            this.subscribe('event:handler:' + name);
+        }).catch((err) => {
+            console.log('failed to register handler: ' + name);
+        })
+    }
+
+    respond(event: object, data: object) {
+        this._sendRequest('respond', {
+            event: event,
+            data: data
+        }).then(() => {
+            console.log('successful thing something omg');
+        }).catch((err) => {
+            console.log('you fucked up');
         })
     }
 
