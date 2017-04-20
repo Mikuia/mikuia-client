@@ -3,6 +3,7 @@ import * as events from 'events';
 import {Wrapper} from './wrapper';
 
 export class MikuiaClient extends events.EventEmitter {
+    private heartbeatTimer: NodeJS.Timer;
     private name: string;
     private token: string;
     private wr: Wrapper;
@@ -12,6 +13,16 @@ export class MikuiaClient extends events.EventEmitter {
         this.name = 'plugin_' + Math.random().toString(36).slice(-10);
         this.token = '';
         this.wr = new Wrapper(address, ports, this);
+
+        this.on('connected', () => {
+            this.heartbeatTimer = setInterval(() => {
+                this.heartbeat();
+            }, 10 * 1000);
+        })
+
+        this.on('disconnected', () => {
+            clearInterval(this.heartbeatTimer);
+        });
     }
 
     _sendRequest(method: string, args: Object | null) {
@@ -32,6 +43,15 @@ export class MikuiaClient extends events.EventEmitter {
 
     reconnect(delay: number) {
         this.wr.reconnect(delay);
+    }
+
+    heartbeat() {
+        this._sendRequest('heartbeat', null).then(() => {
+            console.log('heartbeat!');
+        }).catch((err) => {
+            console.log('heartbeat failed.');
+            this.reconnect(1000);
+        });
     }
 
     identify(name: string) {

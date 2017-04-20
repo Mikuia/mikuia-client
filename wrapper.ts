@@ -26,13 +26,21 @@ export class Wrapper {
         this.req.on('accept_error', () => { console.log(cli.redBright('REQ: ') + 'accept_error'); });
         this.req.on('close', () => { console.log(cli.redBright('REQ: ') + 'close'); });
         this.req.on('close_error', () => { console.log(cli.redBright('REQ: ') + 'close_error'); });
-        this.req.on('disconnect', () => { console.log(cli.redBright('REQ: ') + 'disconnect'); });
+        // this.req.on('disconnect', () => { console.log(cli.redBright('REQ: ') + 'disconnect'); });
 
         this.req.on('connect', () => {
-            console.log('mc: REQ connected');
+            console.log(cli.redBright('REQ: ') + 'connect');
 
             this.sub.connect(this.address + ':' + this.ports[0]);
-        })
+        });
+
+        this.req.on('disconnect', () => {
+            console.log(cli.redBright('REQ: ') + 'disconnect');
+
+            this.sub.disconnect(this.address + ':' + this.ports[0]);
+
+            this.client.emit('disconnected');
+        });
 
         this.req.on('message', (data) => {
             console.log(data);
@@ -84,7 +92,7 @@ export class Wrapper {
 
         this.sub.on('connect', () => {
             this.client.emit('connected');
-        })
+        });
 
         this.sub.on('message', (topic, message) => {
             var data = JSON.parse(message.toString());
@@ -94,7 +102,7 @@ export class Wrapper {
             // console.log('(' + cli.greenBright(data.channel) + ') ' + cli.yellowBright(data.user['display-name']) + ': ' + data.message);
 
             // console.log(JSON.parse(message.toString()));
-        })
+        });
 
         this.sub.monitor();
     }
@@ -107,6 +115,7 @@ export class Wrapper {
     disconnect() {
         this.req.disconnect(this.address + ':' + this.ports[1]);
         this.sub.disconnect(this.address + ':' + this.ports[0]);
+        this.client.emit('disconnected');
     }
 
     reconnect(delay: number) {
