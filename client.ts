@@ -8,10 +8,14 @@ export class MikuiaClient extends events.EventEmitter {
     private token: string;
     private wr: Wrapper;
 
-    constructor(address: string, ports: number[]) {
-        super();
+    constructor(address?: string, ports?: number[]) {
+		super();
+		
+		if(!address) address = 'tcp://127.0.0.1';
+		if(!ports) ports = [3000, 3001];
+
         this.name = 'plugin_' + Math.random().toString(36).slice(-10);
-        this.token = '';
+		this.token = '';
         this.wr = new Wrapper(address, ports, this);
 
         this.on('connected', () => {
