@@ -17,7 +17,6 @@ export class Wrapper {
 	_req() {
 		this.req = zmq.socket('req');
 
-		// this.req.on('connect', () => { console.log(cli.redBright('REQ: ') + 'connect'); });
 		this.req.on('connect_delay', () => { console.log(cli.redBright('REQ: ') + 'connect_delay'); });
 		this.req.on('connect_retry', () => { console.log(cli.redBright('REQ: ') + 'connect_retry'); });
 		this.req.on('listen', () => { console.log(cli.redBright('REQ: ') + 'listen'); });
@@ -26,7 +25,6 @@ export class Wrapper {
 		this.req.on('accept_error', () => { console.log(cli.redBright('REQ: ') + 'accept_error'); });
 		this.req.on('close', () => { console.log(cli.redBright('REQ: ') + 'close'); });
 		this.req.on('close_error', () => { console.log(cli.redBright('REQ: ') + 'close_error'); });
-		// this.req.on('disconnect', () => { console.log(cli.redBright('REQ: ') + 'disconnect'); });
 
 		this.req.on('connect', () => {
 			console.log(cli.redBright('REQ: ') + 'connect');

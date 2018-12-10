@@ -4,7 +4,7 @@
 	"author": "lauriys",
 	"license": "MIT",
 	"repository": {
-	"type": "git",
+		"type": "git",
 		"url": "https://github.com/Mikuia/mikuia-client.git"
 	},
 	"dependencies": {

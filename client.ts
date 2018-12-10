@@ -3,6 +3,8 @@ import * as events from 'events';
 import {Wrapper} from './wrapper';
 
 export class MikuiaClient extends events.EventEmitter {
+	public connected: boolean;
+
 	private heartbeatTimer: NodeJS.Timer;
 	private name: string;
 	private token: string;
@@ -14,6 +16,7 @@ export class MikuiaClient extends events.EventEmitter {
 		if(!address) address = 'tcp://127.0.0.1';
 		if(!ports) ports = [3000, 3001];
 
+		this.connected = false;
 		this.name = 'plugin_' + Math.random().toString(36).slice(-10);
 		this.token = '';
 		this.wr = new Wrapper(address, ports, this);
@@ -25,6 +28,7 @@ export class MikuiaClient extends events.EventEmitter {
 		})
 
 		this.on('disconnected', () => {
+			this.connected = false;
 			clearInterval(this.heartbeatTimer);
 		});
 	}
@@ -64,10 +68,11 @@ export class MikuiaClient extends events.EventEmitter {
 			console.log('identified');
 			this.name = name;
 			this.token = token;
+			this.connected = true;
 
 			this.emit('identified');
 		}).catch((err) => {
-			console.log('failed');
+			console.log('failed to identify');
 			this.reconnect(1000);
 		})
 	}
