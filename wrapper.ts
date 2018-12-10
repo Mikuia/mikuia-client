@@ -1,5 +1,5 @@
 import * as cli from 'cli-color';
-import * as zmq from 'zmq';
+import * as zmq from 'zeromq';
 
 import {MikuiaClient} from './client';
 import {Tools} from './tools';
