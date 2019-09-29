@@ -1,4 +1,5 @@
 import * as events from 'events';
+import * as fs from 'fs';
 
 import {Wrapper} from './wrapper';
 
@@ -90,7 +91,23 @@ export class MikuiaClient extends events.EventEmitter {
 			this.subscribe('event:handler:' + name);
 		}).catch((err) => {
 			console.log('failed to register handler: ' + name);
-		})
+		});
+	}
+
+	async registerLocales() {
+		var languages = fs.readdirSync('locales');
+		for(var lang of languages) {
+			var files = fs.readdirSync(`locales/${lang}`);
+			for(var file of files) {
+				var data = JSON.parse(fs.readFileSync(`locales/${lang}/${file}`, { encoding: 'utf8' }));
+
+				await this._sendRequest('registerLocale', {
+					language: lang,
+					type: file.replace('json', ''),
+					data: data
+				});
+			}
+		}
 	}
 
 	respond(event: object, data: object) {
