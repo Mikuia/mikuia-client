@@ -9,13 +9,13 @@
 	},
 	"dependencies": {
 		"cli-color": "^1.4.0",
-		"ts-node": "^7.0.1",
+		"ts-node": "^8.4.1",
 		"zeromq": "^5.1.0"
 	},
 	"devDependencies": {
 		"@types/cli-color": "^0.3.29",
-		"@types/node": "^10.12.12",
-		"@types/zeromq": "^4.6.1",
-		"typescript": "^3.2.2"
+		"@types/node": "^12.7.8",
+		"@types/zeromq": "^4.6.2",
+		"typescript": "^3.6.3"
 	}
 }
